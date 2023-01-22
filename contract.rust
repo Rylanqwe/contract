@@ -1,0 +1,37 @@
+pragma solidity ^0.8.0;
+
+contract CoinFlip {
+    mapping(address => uint) public balances;
+    address payable public owner;
+    uint public flip;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        require(msg.value > 0, "Must deposit a positive amount");
+        balances[msg.sender] += msg.value;
+    }
+
+    function flipCoin() public {
+        require(balances[msg.sender] > 0, "Must have a balance to flip");
+        flip = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % 2;
+    }
+
+    function guess(uint _guess) public {
+        require(balances[msg.sender] > 0, "Must have a balance to guess");
+        require(flip != 2, "Coin must be flipped before guessing");
+        if (_guess == flip) {
+            msg.sender.transfer(balances[msg.sender] * 2);
+            balances[msg.sender] = 0;
+        } else {
+            msg.sender.transfer(balances[msg.sender]);
+            balances[msg.sender] = 0;
+        }
+    }
+
+    function getBalance() public view returns (uint) {
+        return balances[msg.sender];
+    }
+}
